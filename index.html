@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Classification</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Flower Classification</h1>
+        <input type="file" id="fileInput">
+        <button onclick="predictImage()">Predict</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        async function predictImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert('Please select an image.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            const username = "admin";
+            const password = "password";
+            const basicAuth = 'Basic ' + btoa(username + ":" + password);
+
+            const response = await fetch("http://127.0.0.1:8000/predict/", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Authorization": basicAuth
+                }
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById("result").innerText = `Prediction: ${data.prediction} (Confidence: ${data.confidence.toFixed(2)})`;
+            } else {
+                alert("Error: " + data.detail);
+            }
+        }
+    </script>
+</body>
+</html>
